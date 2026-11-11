@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sunny Blocks: A Vitamin D Puzzle</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--sky1:#0d2a63;--sky2:#2457b8;--glow:#ff8a1f;--sun:#ffcf33;--ink:#fff8e6;--panel:rgba(8,24,64,.55);
+--c0:#ffd23f;--c1:#ff8f2b;--c2:#4fc3ff;--c3:#2f6be0;--c4:#ffe9a8;--cs:min(10.2vw,44px);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sky1:#081a42;--sky2:#173a85}}
+:root[data-theme="dark"]{--sky1:#081a42;--sky2:#173a85}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font:700 16px/1.4 Nunito,system-ui,sans-serif;color:var(--ink);
+background:var(--sky1) linear-gradient(180deg,var(--sky1),var(--sky2) 60%,#e9833a 135%) fixed;user-select:none;-webkit-user-select:none;overflow-x:hidden}
+main{max-width:460px;margin:0 auto;padding:10px 12px 24px;display:flex;flex-direction:column;align-items:center;gap:12px}
+header{display:flex;align-items:center;gap:16px;width:100%;padding-left:12px}
+.sunw{position:relative;width:84px;height:84px;flex:none;--lvl:0}
+.rays{position:absolute;inset:-16px;border-radius:50%;background:repeating-conic-gradient(var(--sun) 0 7deg,transparent 7deg 24deg);
+-webkit-mask:radial-gradient(circle,transparent 38%,#000 41%,#000 60%,transparent 70%);mask:radial-gradient(circle,transparent 38%,#000 41%,#000 60%,transparent 70%);
+animation:spin 50s linear infinite;opacity:calc(.4 + var(--lvl)*.6)}
+.core{position:absolute;inset:4px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff3a8,var(--sun) 45%,var(--glow));
+box-shadow:0 0 calc(16px + var(--lvl)*48px) calc(var(--lvl)*10px) rgba(255,176,40,.8);display:grid;place-items:center;font:700 42px Fredoka,sans-serif;color:#a64300;transition:box-shadow .6s}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{font:700 30px/1 Fredoka,sans-serif;margin:0}
+.sub{margin:5px 0 0;font-size:14px;color:#cfe3ff;font-weight:600}
+.hud{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%}
+.st{background:var(--panel);border-radius:14px;padding:6px 12px}
+.st b{display:block;font:700 22px Fredoka,sans-serif;color:var(--sun)}
+.st small{font-size:13px;color:#cfe3ff}
+.tank{grid-column:1/-1}
+.st.low b{color:#ff7a59}
+.qt{height:8px;border-radius:6px;background:rgba(26,47,102,.15);margin:8px 0;overflow:hidden}
+#qf{height:100%;width:100%;background:linear-gradient(90deg,#ff8f2b,#ffd23f);transition:width 1s linear}
+#qs{float:right}
+.lb{margin:6px 0 10px;padding-left:24px}.lb li{font-weight:800;font-size:15px;margin:3px 0}.lb li b{float:right;color:#b04a00}
+.ne{display:flex;gap:8px;margin:10px 0}.ne input{flex:1;min-width:0;padding:10px 12px;border-radius:12px;border:2px solid #2f6be0;font:800 16px Nunito,sans-serif;color:#1a2f66}.ne .go{margin-top:0;padding:10px 14px;font-size:15px}
+.bar{height:12px;border-radius:8px;background:rgba(255,255,255,.15);margin-top:4px;overflow:hidden}
+#fill{height:100%;width:0;background:linear-gradient(90deg,#4fc3ff,#ffd23f,#ff8f2b);transition:width .6s}
+#board{display:grid;grid-template-columns:repeat(8,var(--cs));gap:3px;padding:8px;background:rgba(6,20,56,.6);border-radius:18px;box-shadow:0 0 0 3px rgba(255,207,51,.35),0 10px 30px rgba(0,0,0,.3)}
+.c{width:var(--cs);height:var(--cs);border-radius:22%;background:rgba(120,170,255,.14)}
+.c.f{background:var(--c)}
+.c.f,.b{box-shadow:inset 0 3px 0 rgba(255,255,255,.35),inset 0 -3px 0 rgba(0,0,0,.2)}
+.c.g{background:rgba(255,226,120,.6);outline:2px solid #ffe278;outline-offset:-2px}
+.boom{animation:boom .5s ease-out}
+@keyframes boom{from{background:#fff7c0;transform:scale(1.3);box-shadow:0 0 20px #ffd23f}to{transform:scale(1)}}
+#tray{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
+.slot{height:clamp(96px,26vw,120px);display:grid;place-items:center;background:var(--panel);border-radius:16px;touch-action:none;cursor:grab}
+.p{display:grid;gap:3px}
+.p i{display:block;border-radius:22%}
+.fl{position:fixed;z-index:50;pointer-events:none;filter:drop-shadow(0 8px 10px rgba(0,0,0,.35))}
+.note{font-size:12.5px;color:#cfe3ff;text-align:center;margin:4px 8px 0;font-weight:600}
+#m{position:fixed;inset:0;background:rgba(5,15,45,.72);display:none;place-items:center;padding:16px;z-index:60;overflow:auto}
+#m.on{display:grid}
+.card{background:linear-gradient(#fff6d6,#ffe39a);color:#1a2f66;border-radius:22px;padding:20px;max-width:420px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.4);user-select:text}
+.tag{font:700 14px Fredoka,sans-serif;color:#b04a00}
+.card h2{font:700 21px/1.25 Fredoka,sans-serif;margin:6px 0 12px}
+.card p,.card li{font-size:14.5px;font-weight:600;margin:8px 0}
+.card ul{padding-left:20px;margin:8px 0}
+.opts button{display:block;width:100%;text-align:left;margin:7px 0;padding:11px 14px;border-radius:14px;border:2px solid #2f6be0;background:#fff;color:#1a2f66;font:800 15px Nunito,sans-serif;cursor:pointer}
+.opts button:hover:not(:disabled){background:#e4f0ff}
+.opts button:disabled{cursor:default}
+.opts .ok{background:#b8f0c8;border-color:#1c9a47}
+.opts .no{background:#ffd0c0;border-color:#d4501f}
+.go{margin-top:10px;padding:12px 22px;border:0;border-radius:14px;background:#c9540a;color:#fff;font:700 17px Fredoka,sans-serif;cursor:pointer}
+button:focus-visible{outline:3px solid #2f6be0;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.rays{animation:none}.boom{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="sunw" id="sun"><div class="rays"></div><div class="core">D</div></div>
+    <div><h1>Sunny Blocks</h1><p class="sub">Fill rows with sunshine. Answer questions to fill your vitamin D tank.</p></div>
+  </header>
+  <section class="hud">
+    <div class="st"><small>Score</small><b id="sc">0</b></div>
+    <div class="st"><small>High score</small><b id="bs">0</b></div>
+    <div class="st"><small>Time</small><b id="tm">3:00</b></div>
+    <div class="st tank"><small id="tt">Vitamin D tank: 0 of 8</small><div class="bar"><div id="fill"></div></div></div>
+  </section>
+  <div id="board" aria-label="Game board"></div>
+  <div id="tray"></div>
+  <p class="note">A game for awareness, not medical advice. If you think your vitamin D is low, ask a doctor about a blood test.</p>
+</main>
+<div id="m" role="dialog" aria-modal="true"></div>
+<script>
+const N=8,$=s=>document.querySelector(s),m=$("#m"),bd=$("#board"),tray=$("#tray");
+const SH=[[[0,0]],[[0,0],[0,1]],[[0,0],[1,0]],[[0,0],[0,1],[0,2]],[[0,0],[1,0],[2,0]],[[0,0],[0,1],[0,2],[0,3]],[[0,0],[1,0],[2,0],[3,0]],
+[[0,0],[0,1],[1,0],[1,1]],[[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]],
+[[0,0],[1,0],[1,1]],[[0,0],[0,1],[1,0]],[[0,1],[1,0],[1,1]],[[0,0],[0,1],[1,1]],
+[[0,0],[1,0],[2,0],[2,1]],[[0,1],[1,1],[2,1],[2,0]],[[0,0],[0,1],[0,2],[1,0]],[[0,0],[0,1],[0,2],[1,2]],[[0,0],[0,1],[0,2],[1,1]]];
+const Q=[
+["Where does your body get most of its vitamin D?",["The sun","Soda","Sleep","Salt"],"Your skin makes vitamin D when sunlight touches it. That’s why it’s called the sunshine vitamin."],
+["Which food has vitamin D?",["Salmon and other oily fish","Candy","Chips","Soda"],"Fish like salmon, eggs, and some milk and cereals have vitamin D added or naturally."],
+["What does vitamin D help your body with?",["Strong bones","Faster Wi-Fi","Longer hair overnight","Better phone battery"],"Vitamin D helps your body use calcium, which keeps your bones strong."],
+["Which could be a sign of low vitamin D?",["Feeling very tired and achy","Sneezing once","Getting a new haircut","Being good at maths"],"Low vitamin D can make you tired and achy. Some people feel nothing at all, so a doctor can check."],
+["Can you get vitamin D from the sun through a closed window?",["No, glass blocks it","Yes, a lot","Yes, but only at night","Only on Mondays"],"Window glass blocks the rays your skin needs. You have to be outside."],
+["Who can have low vitamin D?",["Anyone, even in sunny places","Only people in cold countries","Only grandparents","Only little kids"],"Many people in sunny countries are low because they stay indoors, cover up or avoid the midday heat."],
+["What is a smart way to get vitamin D from the sun?",["A short, safe time outside","Lying in the sun for hours","Getting sunburnt on purpose","Never going outside"],"A little regular sun helps. Burning hurts your skin and gives no extra vitamin D."],
+["How can a doctor find out if your vitamin D is low?",["A blood test","A selfie","A shoe size check","A spelling test"],"A simple blood test shows your vitamin D level."],
+["Before taking vitamin D tablets, what should you do?",["Ask a doctor or pharmacist","Take lots to be safe","Copy a friend","Take them with every meal"],"Too much vitamin D can be harmful, so get the right amount for you."],
+["Very low vitamin D can make kids’ bones weak and bendy. What is it called?",["Rickets","Hiccups","Freckles","Dimples"],"It’s called rickets. Enough vitamin D helps bones grow strong."],
+["Which habit can lead to low vitamin D?",["Staying inside most of the day","Walking outside every day","Eating eggs","Playing sport outdoors"],"Long days inside studying or on screens mean less sun. Take a break outside!"],
+["What can you do today to help your vitamin D?",["Take a short walk outside","Stay in bed all day","Close all the curtains","Skip every meal"],"A short walk outside and foods like eggs and fish help. If you’ll be out for a long time, protect your skin."]
+];
+let g,pcs,score,placed,corr,qi,order,drag,locked,best=0,cells=[],slots=[],T=180,tick,pb=0,LB=[];
+try{best=+localStorage.getItem("sb-best")||0}catch(e){}
+try{LB=JSON.parse(localStorage.getItem("sb-top"))||[]}catch(e){}
+const esc=x=>String(x).replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";");
+function lbHTML(){return LB.length?'<div class="tag">Top scores</div><ol class="lb">'+LB.map(e=>`<li><span>${esc(e.n)}</span><b>${+e.s|0}</b></li>`).join("")+"</ol>":""}
+for(let i=0;i<64;i++){const d=document.createElement("div");d.className="c";bd.append(d);cells.push(d)}
+function render(){cells.forEach((el,i)=>{el.className="c"+(g[i]?" f":"");el.style.setProperty("--c","var(--c"+(g[i]-1)+")")})}
+function boom(set){set.forEach(i=>{cells[i].classList.add("boom")})}
+function pe(s,col,cs){const w=Math.max(...s.map(x=>x[1]))+1,h=Math.max(...s.map(x=>x[0]))+1,d=document.createElement("div");d.className="p";
+d.style.gridTemplateColumns=`repeat(${w},${cs}px)`;d.style.gridTemplateRows=`repeat(${h},${cs}px)`;
+for(let r=0;r<h;r++)for(let c=0;c<w;c++){const k=document.createElement("i");if(s.some(x=>x[0]==r&&x[1]==c)){k.className="b";k.style.background=`var(--c${col})`}d.append(k)}return d}
+function deal(){pcs=[0,1,2].map(()=>({s:SH[Math.random()*SH.length|0],c:Math.random()*5|0}));drawTray()}
+function drawTray(){tray.innerHTML="";slots=[];const cs=cells[0].getBoundingClientRect().width*.6;
+pcs.forEach((p,i)=>{const s=document.createElement("div");s.className="slot";if(p){s.append(pe(p.s,p.c,cs));s.onpointerdown=e=>down(e,i)}tray.append(s);slots.push(s)})}
+function fits(i,r,c){return pcs[i].s.every(([a,b])=>{const R=r+a,C=c+b;return R>=0&&R<N&&C>=0&&C<N&&!g[R*N+C]})}
+function can(i){for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(fits(i,r,c))return true;return false}
+function down(e,i){if(locked||drag||!pcs[i])return;e.preventDefault();const p=pcs[i],cs=cells[0].getBoundingClientRect().width,f=pe(p.s,p.c,cs);
+f.classList.add("fl");document.body.append(f);drag={i,f,cs,pos:null};slots[i].style.opacity=.3;move(e)}
+function ghost(){cells.forEach(x=>x.classList.remove("g"));if(drag&&drag.pos){const[r,c]=drag.pos;pcs[drag.i].s.forEach(([a,b])=>cells[(r+a)*N+c+b].classList.add("g"))}}
+function move(e){if(!drag)return;const{f,cs,i}=drag,left=e.clientX-f.offsetWidth/2,top=e.clientY-f.offsetHeight-28;
+f.style.left=left+"px";f.style.top=top+"px";const r0=cells[0].getBoundingClientRect(),pt=cs+3,c=Math.round((left-r0.left)/pt),r=Math.round((top-r0.top)/pt);
+drag.pos=fits(i,r,c)?[r,c]:null;ghost()}
+function up(){if(!drag)return;const{i,f,pos}=drag;f.remove();slots[i].style.opacity=1;drag.pos=pos;ghost();drag=null;if(pos)place(i,pos[0],pos[1])}
+addEventListener("pointermove",move);addEventListener("pointerup",up);addEventListener("pointercancel",up);addEventListener("resize",()=>pcs&&drawTray());
+function place(i,r,c){const p=pcs[i];p.s.forEach(([a,b])=>g[(r+a)*N+c+b]=p.c+1);score+=p.s.length;pcs[i]=null;placed++;
+const K=new Set();let L=0;
+for(let k=0;k<N;k++){let rw=true,cl=true;for(let j=0;j<N;j++){if(!g[k*N+j])rw=false;if(!g[j*N+k])cl=false}
+if(rw){L++;for(let j=0;j<N;j++)K.add(k*N+j)}if(cl){L++;for(let j=0;j<N;j++)K.add(j*N+k)}}
+if(L){score+=K.size*L*2;K.forEach(x=>g[x]=0)}
+render();if(L)boom(K);if(pcs.every(x=>!x))deal();else drawTray();hud();
+if(placed%5==0)ask();else chk()}
+function chk(){if(!pcs.some((p,i)=>p&&can(i)))over()}
+function beam(){let b=-1,bn=0;for(let k=0;k<N;k++){let n=0;for(let j=0;j<N;j++)if(g[k*N+j])n++;if(n>bn){bn=n;b=k}}
+if(b<0)return false;const K=[];for(let j=0;j<N;j++){g[b*N+j]=0;K.push(b*N+j)}score+=50;render();boom(K);return true}
+function tm(){const e=$("#tm");e.textContent=Math.floor(T/60)+":"+String(T%60).padStart(2,"0");e.parentNode.classList.toggle("low",T<=30)}
+function hud(){if(score>best){best=score;try{localStorage.setItem("sb-best",best)}catch(e){}}
+$("#sc").textContent=score;$("#bs").textContent=best;const l=Math.min(1,corr/8);$("#fill").style.width=l*100+"%";
+$("#tt").textContent="Vitamin D tank: "+Math.min(corr,8)+" of 8";$("#sun").style.setProperty("--lvl",l)}
+function show(h){m.innerHTML='<div class="card">'+h+"</div>";m.classList.add("on")}
+function hide(){m.classList.remove("on")}
+function ask(){locked=true;const q=Q[order[qi++%Q.length]];let qn=15;
+show(`<div class="tag">Sunshine question <span id="qs">15s</span></div><div class="qt"><div id="qf"></div></div><h2>${q[0]}</h2><div class="opts"></div><p class="fact"></p>`);
+const o=m.querySelector(".opts"),f=m.querySelector(".fact");
+function fin(){o.querySelectorAll("button").forEach(x=>{x.disabled=true;if(x.dataset.ok)x.className="ok"});hud();
+const go=document.createElement("button");go.className="go";go.textContent="Keep playing";go.onclick=()=>{hide();locked=false;chk()};m.querySelector(".card").append(go);go.focus()}
+const iv=setInterval(()=>{qn--;$("#qf").style.width=qn/15*100+"%";$("#qs").textContent=qn+"s";if(qn<=0){clearInterval(iv);f.innerHTML="<b>Time’s up!</b> "+q[2];fin()}},1000);
+q[1].map((t,i)=>[t,i==0]).sort(()=>Math.random()-.5).forEach(([t,ok])=>{const b=document.createElement("button");b.textContent=t;if(ok)b.dataset.ok=1;
+b.onclick=()=>{clearInterval(iv);
+if(ok){const sp=qn*5;corr++;score+=100+sp;const bm=beam();f.innerHTML="<b>Correct! +100 points, +"+sp+" speed bonus"+(bm?" and a Sunbeam cleared your fullest row.":".")+"</b><br>"+q[2];
+if(corr==8)f.innerHTML+="<br><b>Your vitamin D tank is full. You’re a Sun Champion!</b>"}
+else{b.className="no";f.innerHTML="<b>Not quite.</b> "+q[2]}
+fin()};o.append(b)})}
+function over(t){locked=true;clearInterval(tick);if(drag){drag.f.remove();drag=null;ghost()}
+const nh=score>pb&&score>0,q=score>0&&(LB.length<5||score>LB[LB.length-1].s);
+show(`<div class="tag">${t?"Time’s up!":"The sun is setting"}</div><h2>${t?"The clock ran out.":"No more room."} You scored ${score}!</h2>${nh?"<p><b>New high score! 🏆</b></p>":""}
+${q?'<div class="ne"><input id="nm" maxlength="12" placeholder="Type your name" aria-label="Your name"><button class="go" id="sv">Save score</button></div>':""}<div id="lb">${lbHTML()}</div>
+<p>You answered ${corr} sunshine question${corr==1?"":"s"} correctly. Take these home:</p>
+<ul><li>Get short, sensible sun time and never burn.</li><li>Eat vitamin D foods: oily fish, egg yolks, fortified foods.</li><li>Tired, aching or low for a while? Ask a doctor about a blood test before taking supplements.</li></ul>
+<button class="go" id="again">Play again</button>`);
+$("#again").onclick=start;
+if(q){const sv=()=>{const n=($("#nm").value.trim()||"Player").slice(0,12);LB.push({n,s:score});LB.sort((a,b)=>b.s-a.s);LB=LB.slice(0,5);try{localStorage.setItem("sb-top",JSON.stringify(LB))}catch(e){}$("#lb").innerHTML=lbHTML();m.querySelector(".ne").remove()};
+$("#sv").onclick=sv;$("#nm").onkeydown=e=>{if(e.key=="Enter")sv()}}}
+function start(){g=Array(64).fill(0);score=0;placed=0;corr=0;qi=0;locked=false;order=Q.map((_,i)=>i).sort(()=>Math.random()-.5);pb=best;hide();render();deal();hud();T=180;tm();clearInterval(tick);tick=setInterval(()=>{if(locked)return;T--;tm();if(T<=0)over(1)},1000)}
+start();locked=true;
+show(`<div class="tag">Welcome</div><h2>Vitamin D is the sunshine vitamin. Let’s keep it topped up!</h2>
+<p>Drag blocks onto the grid. Fill a full row or column to clear it. You have 3 minutes to score as high as you can. Every 5 blocks, a sunshine question pops up and the clock pauses. You get 15 seconds to answer: right answers earn bonus points (faster is better) and a Sunbeam that clears a row.</p>
+${lbHTML()}<button class="go" id="st">Start playing</button>`);
+$("#st").onclick=()=>{hide();locked=false};
+</script>
+</body>
+</html>
